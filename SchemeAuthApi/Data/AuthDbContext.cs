@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SchemeAuthApi.User.Entity;
 
 namespace SchemeAuthApi.Data
 {
-    public class AuthDbContext : DbContext
+    public class AuthDbContext : IdentityDbContext<UserEntity, UserRoleEntity, string>
     {
         public AuthDbContext()
         {
@@ -13,14 +14,11 @@ namespace SchemeAuthApi.Data
         {
         }
 
-        public DbSet<UserEntity> Users { get; set; }
+        public DbSet<UserEntity> Users { get; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<UserEntity>(entity =>
-            {
-                entity.HasIndex(e => e.Email).IsUnique();
-            });
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

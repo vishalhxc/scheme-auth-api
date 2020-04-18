@@ -25,7 +25,7 @@ namespace SchemeAuthApi.User.Repository
         private List<UserEntity> GetUser(string username, string email)
         {
             return _context.Users.Where(
-                u => u.Username == username ||
+                u => u.UserName == username ||
                 u.Email == email).ToList();
         }
 
@@ -45,7 +45,7 @@ namespace SchemeAuthApi.User.Repository
             var errorMessages = new List<string>();
             users.ForEach(u =>
             {
-                if (u.Username == username)
+                if (u.UserName == username)
                     errorMessages.Add(ErrorConstants.UsernameAlreadyExists);
                 if (u.Email == email)
                     errorMessages.Add(ErrorConstants.EmailAlreadyExists);
@@ -57,7 +57,7 @@ namespace SchemeAuthApi.User.Repository
         {
             return new UserEntity
             {
-                Username = userDto.Username,
+                UserName = userDto.Username,
                 Email = userDto.Email,
                 FullName = userDto.FullName
             };
@@ -67,7 +67,7 @@ namespace SchemeAuthApi.User.Repository
         {
             return new UserDto
             {
-                Username = userEntity.Username,
+                Username = userEntity.UserName,
                 Email = userEntity.Email,
                 FullName = userEntity.FullName
             };
