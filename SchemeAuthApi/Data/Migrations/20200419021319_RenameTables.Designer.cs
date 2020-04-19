@@ -2,16 +2,18 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SchemeAuthApi.Data;
 
-namespace SchemeAuthApi.Migrations
+namespace SchemeAuthApi.Data.Migrations
 {
     [DbContext(typeof(AuthDbContext))]
-    partial class BearstrengthDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200419021319_RenameTables")]
+    partial class RenameTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,7 +61,7 @@ namespace SchemeAuthApi.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("RoleClaim");
+                    b.ToTable("AspNetRoleClaims");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -139,7 +141,7 @@ namespace SchemeAuthApi.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("UserToken");
+                    b.ToTable("AspNetUserTokens");
                 });
 
             modelBuilder.Entity("SchemeAuthApi.User.Entity.UserEntity", b =>

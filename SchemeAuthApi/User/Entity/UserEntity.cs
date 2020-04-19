@@ -8,6 +8,9 @@ namespace SchemeAuthApi.User.Entity
 {
     public class UserEntity: IdentityUser<string>
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public override string Id { get; set; }
+        
         [Required]
         [PersonalData]
         [StringLength(100, ErrorMessage = ErrorConstants.FullNameTooLong)]

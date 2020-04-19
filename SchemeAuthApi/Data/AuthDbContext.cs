@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SchemeAuthApi.User.Entity;
 
@@ -13,12 +14,19 @@ namespace SchemeAuthApi.Data
         public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options)
         {
         }
-
+        
         public DbSet<UserEntity> Users { get; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<IdentityRole>().ToTable("Role");
+            modelBuilder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaim");
+            modelBuilder.Entity<UserEntity>().ToTable("User");
+            modelBuilder.Entity<IdentityUserRole<string>>().ToTable("UserRole");
+            modelBuilder.Entity<IdentityUserClaim<string>>().ToTable("UserClaim");
+            modelBuilder.Entity<IdentityUserLogin<string>>().ToTable("UserLogin");
+            modelBuilder.Entity<IdentityUserToken<string>>().ToTable("UserToken");
         }
     }
 }

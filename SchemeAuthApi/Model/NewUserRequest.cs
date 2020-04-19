@@ -5,11 +5,15 @@ using SchemeAuthApi.User.Dto;
 
 namespace SchemeAuthApi.Model
 {
-    public class UserRequest
+    public class NewUserRequest
     {
         [Required(ErrorMessage = ErrorConstants.UsernameIsRequired)]
         [StringLength(20, ErrorMessage = ErrorConstants.UsernameTooLong)]
         public string Username { get; set; }
+        
+        [Required(ErrorMessage = ErrorConstants.PasswordIsRequired)]
+        [StringLength(50, MinimumLength = 8, ErrorMessage = ErrorConstants.PasswordLengthInvalid)]
+        public string Password { get; set; }
 
         [Required(ErrorMessage = ErrorConstants.EmailIsRequired)]
         [StringLength(100, ErrorMessage = ErrorConstants.EmailTooLong)]

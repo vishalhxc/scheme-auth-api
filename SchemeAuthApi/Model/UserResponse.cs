@@ -11,10 +11,10 @@ namespace SchemeAuthApi.Model
 
         public override bool Equals(object obj)
         {
-            return obj is UserResponse dto &&
-                   Username == dto.Username &&
-                   Email == dto.Email &&
-                   FullName == dto.FullName;
+            return obj is UserResponse userResponse &&
+                   Username == userResponse.Username &&
+                   Email == userResponse.Email &&
+                   FullName == userResponse.FullName;
         }
 
         public override int GetHashCode()

@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using SchemeAuthApi.Model;
 using SchemeAuthApi.User.Dto;
-using SchemeAuthApi.User.Service;
+using SchemeAuthApi.User;
 
 namespace SchemeAuthApi.Controller
 {
@@ -17,10 +18,10 @@ namespace SchemeAuthApi.Controller
         }
 
         [HttpPost]
-        public ActionResult<DetailResponse<UserResponse>> CreateUser(UserRequest user)
+        public async Task<ActionResult<DetailResponse<UserResponse>>> RegisterUser(NewUserRequest newUser)
         {
-            var userDto = _userService.CreateUser(user);
-            return Created("CreateUser",
+            var userDto = await _userService.CreateUser(newUser);
+            return Created("RegisterUser",
                 new DetailResponse<UserResponse>
                 {
                     Status = 201,
@@ -28,7 +29,7 @@ namespace SchemeAuthApi.Controller
                 });
         }
 
-        private UserResponse ConvertToUserResponse(UserDto userDto)
+        private static UserResponse ConvertToUserResponse(UserDto userDto)
         {
             return new UserResponse
             {

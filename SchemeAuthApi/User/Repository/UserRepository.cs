@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
 using SchemeAuthApi.Data;
 using SchemeAuthApi.Error;
 using SchemeAuthApi.User.Dto;
@@ -14,14 +15,7 @@ namespace SchemeAuthApi.User.Repository
         {
             _context = context;
         }
-
-        public UserDto AddUser(UserDto userDto)
-        {
-            ValidateUser(userDto.Username, userDto.Email);
-            return ConvertToDto(
-                SaveUser(ConvertToEntity(userDto)));
-        }
-
+        
         private List<UserEntity> GetUser(string username, string email)
         {
             return _context.Users.Where(

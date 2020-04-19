@@ -3,27 +3,30 @@ using SchemeAuthApi.Error;
 using SchemeAuthApi.Model;
 using SchemeAuthApi.User.Dto;
 using SchemeAuthApi.User.Repository;
-using SchemeAuthApi.User.Service;
 using Moq;
+using SchemeAuthApi.User;
+using SchemeAuthApi.User.Identity;
 using Xunit;
 
-namespace SchemeAuthApi.Tests.Service
+namespace SchemeAuthApi.Tests.User
 {
     public class UserServiceTests
     {
-        private readonly Mock<IUserRepository> mockUserRepository;
-        private readonly UserService userService;
+        private readonly Mock<IUserRepository> _mockUserRepository;
+        private readonly Mock<IIdentityService> _mockIdentityService;
+        private readonly UserService _userService; 
 
         public UserServiceTests()
         {
-            mockUserRepository = new Mock<IUserRepository>();
-            userService = new UserService(mockUserRepository.Object);
+            _mockUserRepository = new Mock<IUserRepository>();
+            _mockIdentityService = new Mock<IIdentityService>();
+            _userService = new UserService(_mockUserRepository.Object, _mockIdentityService.Object);
         }
 
-        [Fact(DisplayName = "Create user, happy path, calls Repository")]
-        public void CreateUser_CallsRepository()
+        [Fact(DisplayName = "Create user, happy path, calls Identity")]
+        public void CreateUser_CallsIdentity()
         {
-            var input = new UserRequest
+            var input = new NewUserRequest
             {
                 Username = "user1",
                 Email = "user1@email.com",
@@ -42,48 +45,52 @@ namespace SchemeAuthApi.Tests.Service
                 FullName = "User One"
             };
 
-            mockUserRepository.Setup(repo => repo.AddUser(convertedDto))
-                .Returns(convertedDto);
+            _mockIdentityService.Setup(identityService
+                    => identityService.RegisterUser(convertedDto, input.Password))
+                .ReturnsAsync(convertedDto);
 
             // act
-            var actual = userService.CreateUser(input);
+            var actual = _userService.CreateUser(input).Result;
 
             // assert
             Assert.Equal(expected, actual);
-            mockUserRepository.Verify(repo => repo.AddUser(convertedDto), Times.Once);
-            mockUserRepository.VerifyNoOtherCalls();
+            _mockIdentityService.Verify(identityService
+                => identityService.RegisterUser(convertedDto, input.Password), Times.Once);
+            _mockIdentityService.VerifyNoOtherCalls();
         }
 
-        [Fact(DisplayName = "Create user, calls Repository, throws exception")]
-        public void CreateUser_CallsRepositoryAndThrowsException()
+        [Fact(DisplayName = "Create user, calls Identity, throws exception")]
+        public void CreateUser_CallsIdentityAndThrowsException()
         {
-            var input = new UserRequest
+            var input = new NewUserRequest
             {
-                Username = "user2",
-                Email = "user@email.com",
-                FullName = "User Two"
+                Username = "user1",
+                Email = "user1@email.com",
+                FullName = "User One"
             };
             var expected = new ConflictException(
                 new List<string>() { ErrorConstants.UsernameAlreadyExists });
-
             var convertedDto = new UserDto
             {
-                Username = "user2",
-                Email = "user@email.com",
-                FullName = "User Two"
+                Username = "user1",
+                Email = "user1@email.com",
+                FullName = "User One"
             };
-            mockUserRepository.Setup(repo => repo.AddUser(convertedDto))
-                .Throws(expected);
+
+            _mockIdentityService.Setup(identityService
+                    => identityService.RegisterUser(convertedDto, input.Password))
+                .ThrowsAsync(expected);
 
             // act
-            var actual = Assert.Throws<ConflictException>(
-                () => userService.CreateUser(input)
+            var actual = Assert.ThrowsAsync<ConflictException>(
+                () => _userService.CreateUser(input)
             );
 
             // assert
-            Assert.Equal(expected.Messages, actual.Messages);
-            mockUserRepository.Verify(repo => repo.AddUser(convertedDto), Times.Once);
-            mockUserRepository.VerifyNoOtherCalls();
+            Assert.Equal(expected, actual.Result);
+            _mockIdentityService.Verify(identityService
+                => identityService.RegisterUser(convertedDto, input.Password), Times.Once);
+            _mockIdentityService.VerifyNoOtherCalls();
         }
     }
 }

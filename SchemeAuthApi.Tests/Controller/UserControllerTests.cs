@@ -3,9 +3,9 @@ using SchemeAuthApi.Controller;
 using SchemeAuthApi.Error;
 using SchemeAuthApi.Model;
 using SchemeAuthApi.User.Dto;
-using SchemeAuthApi.User.Service;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using SchemeAuthApi.User;
 using Xunit;
 
 namespace SchemeAuthApi.Tests.Controller
@@ -24,7 +24,7 @@ namespace SchemeAuthApi.Tests.Controller
         [Fact(DisplayName = "Create user, happy path, endpoint calls user service and returns response")]
         public void CreateUser_CallsRepository()
         {
-            var input = new UserRequest
+            var input = new NewUserRequest
             {
                 Username = "user1",
                 Email = "user1@email.com",
@@ -49,15 +49,14 @@ namespace SchemeAuthApi.Tests.Controller
             };
 
             mockUserService.Setup(service => service.CreateUser(input))
-                .Returns(convertedDto);
+                .ReturnsAsync(convertedDto);
 
             // act
-            var actual = userController.CreateUser(input).Result
-                as CreatedResult;
+            var actual = userController.RegisterUser(input).Result.Result as CreatedResult;
 
             // assert
-            Assert.Equal(expected, actual.Value);
-            Assert.Equal(expectedStatus, actual.StatusCode);
+            Assert.Equal(expected, actual?.Value);
+            Assert.Equal(expectedStatus, actual?.StatusCode);
             mockUserService.Verify(service => service.CreateUser(input), Times.Once);
             mockUserService.VerifyNoOtherCalls();
         }

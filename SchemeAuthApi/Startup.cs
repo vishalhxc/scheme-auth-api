@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using SchemeAuthApi.Data;
 using SchemeAuthApi.Error;
 using SchemeAuthApi.User.Entity;
 using SchemeAuthApi.User.Repository;
-using SchemeAuthApi.User.Service;
+using SchemeAuthApi.User;
+using SchemeAuthApi.User.Identity;
 
 namespace SchemeAuthApi
 {
@@ -34,11 +34,13 @@ namespace SchemeAuthApi
                     options.Password.RequireDigit = false;
                     options.Password.RequiredLength = 8;
                     options.Password.RequireUppercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
                 })
                 .AddEntityFrameworkStores<AuthDbContext>()
                 .AddDefaultTokenProviders();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IIdentityService, IdentityService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

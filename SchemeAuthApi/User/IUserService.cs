@@ -1,10 +1,11 @@
-﻿using SchemeAuthApi.Model;
+﻿using System.Threading.Tasks;
+using SchemeAuthApi.Model;
 using SchemeAuthApi.User.Dto;
 
-namespace SchemeAuthApi.User.Service
+namespace SchemeAuthApi.User
 {
     public interface IUserService
     {
-        public UserDto CreateUser(UserRequest userRequest);
+        public Task<UserDto> CreateUser(NewUserRequest newUserRequest);
     }
 }
