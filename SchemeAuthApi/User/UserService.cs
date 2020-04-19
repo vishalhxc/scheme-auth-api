@@ -28,6 +28,11 @@ namespace SchemeAuthApi.User
             return userDto;
         }
 
+        public async Task SignInUser(string username, string password)
+        {
+            await _identityService.SignInUser(username, password);
+        }
+
         private static UserDto ConvertToUserDto(NewUserRequest newUserRequest)
         {
             return new UserDto()

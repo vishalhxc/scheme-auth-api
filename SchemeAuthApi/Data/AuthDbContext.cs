@@ -20,12 +20,12 @@ namespace SchemeAuthApi.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<IdentityRole>().ToTable("Role");
-            modelBuilder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaim");
+            modelBuilder.Entity<UserRoleEntity>().ToTable("Role");
             modelBuilder.Entity<UserEntity>().ToTable("User");
-            modelBuilder.Entity<IdentityUserRole<string>>().ToTable("UserRole");
-            modelBuilder.Entity<IdentityUserClaim<string>>().ToTable("UserClaim");
+            modelBuilder.Entity<IdentityRoleClaim<int>>().ToTable("RoleClaim");
+            modelBuilder.Entity<IdentityUserClaim<int>>().ToTable("UserClaim");
             modelBuilder.Entity<IdentityUserLogin<string>>().ToTable("UserLogin");
+            modelBuilder.Entity<IdentityUserRole<string>>().ToTable("UserRole");
             modelBuilder.Entity<IdentityUserToken<string>>().ToTable("UserToken");
         }
     }

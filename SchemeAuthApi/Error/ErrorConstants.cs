@@ -13,6 +13,7 @@
         public const string EmailIsRequired = "Email is required";
         public const string PasswordIsRequired = "Password is required";
         public const string PasswordLengthInvalid = "Password must be at least 8 characters";
+        public const string UsernamePasswordInvalid = "Incorrect Username and Password combination";
         public const string FullNameIsRequired = "Full name is required";
         public const string UsernameTooLong = "Username is limited to 20 characters";
         public const string EmailTooLong = "Email is limited to 100 characters";

@@ -1,34 +1,31 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace SchemeAuthApi.Data.Migrations
 {
-    public partial class RenameTables : Migration
+    public partial class UpdateRestOfTables : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_AspNetUserClaims_AspNetUsers_UserId",
-                table: "AspNetUserClaims");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                name: "FK_AspNetUserLogins_User_UserId",
                 table: "AspNetUserLogins");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
+                name: "FK_AspNetUserRoles_Role_RoleId",
                 table: "AspNetUserRoles");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                name: "FK_AspNetUserRoles_User_UserId",
                 table: "AspNetUserRoles");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_AspNetUserTokens_AspNetUsers_UserId",
+                name: "FK_AspNetUserTokens_User_UserId",
                 table: "AspNetUserTokens");
 
             migrationBuilder.DropPrimaryKey(
-                name: "PK_AspNetUsers",
-                table: "AspNetUsers");
+                name: "PK_AspNetUserTokens",
+                table: "AspNetUserTokens");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_AspNetUserRoles",
@@ -38,13 +35,9 @@ namespace SchemeAuthApi.Data.Migrations
                 name: "PK_AspNetUserLogins",
                 table: "AspNetUserLogins");
 
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_AspNetUserClaims",
-                table: "AspNetUserClaims");
-
             migrationBuilder.RenameTable(
-                name: "AspNetUsers",
-                newName: "User");
+                name: "AspNetUserTokens",
+                newName: "UserToken");
 
             migrationBuilder.RenameTable(
                 name: "AspNetUserRoles",
@@ -53,10 +46,6 @@ namespace SchemeAuthApi.Data.Migrations
             migrationBuilder.RenameTable(
                 name: "AspNetUserLogins",
                 newName: "UserLogin");
-
-            migrationBuilder.RenameTable(
-                name: "AspNetUserClaims",
-                newName: "UserClaim");
 
             migrationBuilder.RenameIndex(
                 name: "IX_AspNetUserRoles_RoleId",
@@ -68,15 +57,10 @@ namespace SchemeAuthApi.Data.Migrations
                 table: "UserLogin",
                 newName: "IX_UserLogin_UserId");
 
-            migrationBuilder.RenameIndex(
-                name: "IX_AspNetUserClaims_UserId",
-                table: "UserClaim",
-                newName: "IX_UserClaim_UserId");
-
             migrationBuilder.AddPrimaryKey(
-                name: "PK_User",
-                table: "User",
-                column: "Id");
+                name: "PK_UserToken",
+                table: "UserToken",
+                columns: new[] { "UserId", "LoginProvider", "Name" });
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_UserRole",
@@ -88,40 +72,35 @@ namespace SchemeAuthApi.Data.Migrations
                 table: "UserLogin",
                 columns: new[] { "LoginProvider", "ProviderKey" });
 
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_UserClaim",
-                table: "UserClaim",
-                column: "Id");
-
             migrationBuilder.CreateTable(
-                name: "Role",
+                name: "RoleClaim",
                 columns: table => new
                 {
-                    Id = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    NormalizedName = table.Column<string>(nullable: true),
-                    ConcurrencyStamp = table.Column<string>(nullable: true)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RoleId = table.Column<int>(nullable: false),
+                    ClaimType = table.Column<string>(nullable: true),
+                    ClaimValue = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Role", x => x.Id);
+                    table.PrimaryKey("PK_RoleClaim", x => x.Id);
                 });
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserTokens_User_UserId",
-                table: "AspNetUserTokens",
-                column: "UserId",
-                principalTable: "User",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_UserClaim_User_UserId",
-                table: "UserClaim",
-                column: "UserId",
-                principalTable: "User",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+            migrationBuilder.CreateTable(
+                name: "UserClaim",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(nullable: false),
+                    ClaimType = table.Column<string>(nullable: true),
+                    ClaimValue = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserClaim", x => x.Id);
+                });
 
             migrationBuilder.AddForeignKey(
                 name: "FK_UserLogin_User_UserId",
@@ -132,10 +111,10 @@ namespace SchemeAuthApi.Data.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_UserRole_AspNetRoles_RoleId",
+                name: "FK_UserRole_Role_RoleId",
                 table: "UserRole",
                 column: "RoleId",
-                principalTable: "AspNetRoles",
+                principalTable: "Role",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
@@ -146,32 +125,43 @@ namespace SchemeAuthApi.Data.Migrations
                 principalTable: "User",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_UserToken_User_UserId",
+                table: "UserToken",
+                column: "UserId",
+                principalTable: "User",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_AspNetUserTokens_User_UserId",
-                table: "AspNetUserTokens");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_UserClaim_User_UserId",
-                table: "UserClaim");
-
-            migrationBuilder.DropForeignKey(
                 name: "FK_UserLogin_User_UserId",
                 table: "UserLogin");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_UserRole_AspNetRoles_RoleId",
+                name: "FK_UserRole_Role_RoleId",
                 table: "UserRole");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_UserRole_User_UserId",
                 table: "UserRole");
 
+            migrationBuilder.DropForeignKey(
+                name: "FK_UserToken_User_UserId",
+                table: "UserToken");
+
             migrationBuilder.DropTable(
-                name: "Role");
+                name: "RoleClaim");
+
+            migrationBuilder.DropTable(
+                name: "UserClaim");
+
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_UserToken",
+                table: "UserToken");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_UserRole",
@@ -181,13 +171,9 @@ namespace SchemeAuthApi.Data.Migrations
                 name: "PK_UserLogin",
                 table: "UserLogin");
 
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_UserClaim",
-                table: "UserClaim");
-
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_User",
-                table: "User");
+            migrationBuilder.RenameTable(
+                name: "UserToken",
+                newName: "AspNetUserTokens");
 
             migrationBuilder.RenameTable(
                 name: "UserRole",
@@ -196,14 +182,6 @@ namespace SchemeAuthApi.Data.Migrations
             migrationBuilder.RenameTable(
                 name: "UserLogin",
                 newName: "AspNetUserLogins");
-
-            migrationBuilder.RenameTable(
-                name: "UserClaim",
-                newName: "AspNetUserClaims");
-
-            migrationBuilder.RenameTable(
-                name: "User",
-                newName: "AspNetUsers");
 
             migrationBuilder.RenameIndex(
                 name: "IX_UserRole_RoleId",
@@ -215,10 +193,10 @@ namespace SchemeAuthApi.Data.Migrations
                 table: "AspNetUserLogins",
                 newName: "IX_AspNetUserLogins_UserId");
 
-            migrationBuilder.RenameIndex(
-                name: "IX_UserClaim_UserId",
-                table: "AspNetUserClaims",
-                newName: "IX_AspNetUserClaims_UserId");
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_AspNetUserTokens",
+                table: "AspNetUserTokens",
+                columns: new[] { "UserId", "LoginProvider", "Name" });
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_AspNetUserRoles",
@@ -230,53 +208,35 @@ namespace SchemeAuthApi.Data.Migrations
                 table: "AspNetUserLogins",
                 columns: new[] { "LoginProvider", "ProviderKey" });
 
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_AspNetUserClaims",
-                table: "AspNetUserClaims",
-                column: "Id");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_AspNetUsers",
-                table: "AspNetUsers",
-                column: "Id");
-
             migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserClaims_AspNetUsers_UserId",
-                table: "AspNetUserClaims",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                name: "FK_AspNetUserLogins_User_UserId",
                 table: "AspNetUserLogins",
                 column: "UserId",
-                principalTable: "AspNetUsers",
+                principalTable: "User",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
+                name: "FK_AspNetUserRoles_Role_RoleId",
                 table: "AspNetUserRoles",
                 column: "RoleId",
-                principalTable: "AspNetRoles",
+                principalTable: "Role",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                name: "FK_AspNetUserRoles_User_UserId",
                 table: "AspNetUserRoles",
                 column: "UserId",
-                principalTable: "AspNetUsers",
+                principalTable: "User",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserTokens_AspNetUsers_UserId",
+                name: "FK_AspNetUserTokens_User_UserId",
                 table: "AspNetUserTokens",
                 column: "UserId",
-                principalTable: "AspNetUsers",
+                principalTable: "User",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }

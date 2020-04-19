@@ -17,12 +17,13 @@ namespace SchemeAuthApi.Tests.User.Identity
     public class IdentityServiceTests
     {
         private readonly Mock<MockUserManager> _mockUserManager;
+        private readonly Mock<SignInManager<UserEntity>> _mockSignInManager;
         private readonly IdentityService _identityService;
 
         public IdentityServiceTests()
         {
             _mockUserManager = new Mock<MockUserManager>();
-            _identityService = new IdentityService(_mockUserManager.Object);
+            _identityService = new IdentityService(_mockUserManager.Object, _mockSignInManager.Object);
         }
         
         [Fact(DisplayName = "Register user, happy path, returns Dto")]

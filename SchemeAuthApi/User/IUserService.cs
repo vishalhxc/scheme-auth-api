@@ -7,5 +7,6 @@ namespace SchemeAuthApi.User
     public interface IUserService
     {
         public Task<UserDto> CreateUser(NewUserRequest newUserRequest);
+        public Task SignInUser(string username, string password);
     }
 }

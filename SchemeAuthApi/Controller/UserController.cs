@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SchemeAuthApi.Model;
 using SchemeAuthApi.User.Dto;
@@ -26,6 +27,18 @@ namespace SchemeAuthApi.Controller
                 {
                     Status = 201,
                     Detail = ConvertToUserResponse(userDto)
+                });
+        }
+
+        [HttpPost]
+        [Route("sign-in")]
+        public async Task<ActionResult<DetailResponse<string>>> SignInUser(SignInUserRequest signIn)
+        {
+            await _userService.SignInUser(signIn.Username, signIn.Password);
+            return Ok(new DetailResponse<string>
+                {
+                    Status = 201, 
+                    Detail = "Successfully logged in"
                 });
         }
 
