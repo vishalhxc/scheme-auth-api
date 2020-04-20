@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SchemeAuthApi.Error;
 using SchemeAuthApi.Model;
 using SchemeAuthApi.User.Dto;
@@ -90,6 +91,21 @@ namespace SchemeAuthApi.Tests.User
             Assert.Equal(expected, actual.Result);
             _mockIdentityService.Verify(identityService
                 => identityService.RegisterUser(convertedDto, input.Password), Times.Once);
+            _mockIdentityService.VerifyNoOtherCalls();
+        }
+        
+        [Fact(DisplayName = "Sign in user, happy path, calls Identity")]
+        public void SignInUser_CallsIdentity()
+        {
+            var inputUsername = "user1";
+            var inputPassword = "password";
+
+            // act
+            _userService.SignInUser(inputUsername, inputPassword);
+
+            // assert
+            _mockIdentityService.Verify(identityService
+                => identityService.SignInUser(inputUsername, inputPassword), Times.Once);
             _mockIdentityService.VerifyNoOtherCalls();
         }
     }

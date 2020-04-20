@@ -22,7 +22,7 @@ namespace SchemeAuthApi.Tests.Controller
         }
 
         [Fact(DisplayName = "Create user, happy path, endpoint calls user service and returns response")]
-        public void CreateUser_CallsRepository()
+        public void CreateUser_CallsUserService()
         {
             var input = new NewUserRequest
             {
@@ -58,6 +58,31 @@ namespace SchemeAuthApi.Tests.Controller
             Assert.Equal(expected, actual?.Value);
             Assert.Equal(expectedStatus, actual?.StatusCode);
             mockUserService.Verify(service => service.CreateUser(input), Times.Once);
+            mockUserService.VerifyNoOtherCalls();
+        }
+        
+        [Fact(DisplayName = "Sign in user, happy path, endpoint calls user service and returns response")]
+        public void SignInUser_CallsUserService()
+        {
+            var input = new SignInUserRequest
+            {
+                Username = "user1",
+                Password = "password"
+            };
+            var expectedStatus = 200;
+            var expected = new DetailResponse<string>
+            {
+                Status = 200,
+                Detail = "Successfully logged in"
+            };
+
+            // act
+            var actual = userController.SignInUser(input).Result.Result as OkObjectResult;
+
+            // assert
+            Assert.Equal(expected, actual?.Value);
+            Assert.Equal(expectedStatus, actual?.StatusCode);
+            mockUserService.Verify(service => service.SignInUser(input.Username, input.Password));
             mockUserService.VerifyNoOtherCalls();
         }
     }

@@ -37,7 +37,7 @@ namespace SchemeAuthApi.Controller
             await _userService.SignInUser(signIn.Username, signIn.Password);
             return Ok(new DetailResponse<string>
                 {
-                    Status = 201, 
+                    Status = 200, 
                     Detail = "Successfully logged in"
                 });
         }
